@@ -33,19 +33,58 @@ type Item = {
   image: string
 }
 
-const drinksDataset: Item[] = [
-  { id: 1, name: "Absolut Vodka", category: "Vodka", stock: 12, min: 4, bottleSize: "700ml", cost: 11.5, supplier: "Aegean Spirits", image: "🍸" },
-  { id: 2, name: "Grey Goose Vodka", category: "Vodka", stock: 6, min: 3, bottleSize: "700ml", cost: 28, supplier: "Premium Brands", image: "🍸" },
-  { id: 3, name: "Jack Daniel's Whiskey", category: "Whiskey", stock: 8, min: 3, bottleSize: "700ml", cost: 18, supplier: "Brown Cellars", image: "🥃" },
-  { id: 4, name: "Jameson Irish Whiskey", category: "Whiskey", stock: 7, min: 3, bottleSize: "700ml", cost: 17, supplier: "Brown Cellars", image: "🥃" },
-  { id: 5, name: "Bacardi Rum", category: "Rum", stock: 9, min: 3, bottleSize: "700ml", cost: 14, supplier: "Island Drinks", image: "🏝️" },
-  { id: 6, name: "Captain Morgan Rum", category: "Rum", stock: 5, min: 3, bottleSize: "700ml", cost: 15, supplier: "Island Drinks", image: "🏝️" },
-  { id: 7, name: "Bombay Sapphire Gin", category: "Gin", stock: 6, min: 3, bottleSize: "700ml", cost: 19, supplier: "Blue River Dist.", image: "🌿" },
-  { id: 8, name: "Tanqueray Gin", category: "Gin", stock: 5, min: 3, bottleSize: "700ml", cost: 18, supplier: "Blue River Dist.", image: "🌿" },
-  { id: 9, name: "Patron Tequila", category: "Tequila", stock: 4, min: 2, bottleSize: "700ml", cost: 35, supplier: "Agave House", image: "🌵" },
-  { id: 10, name: "Jose Cuervo Tequila", category: "Tequila", stock: 6, min: 2, bottleSize: "700ml", cost: 16, supplier: "Agave House", image: "🌵" },
-  { id: 11, name: "Jagermeister", category: "Liqueur", stock: 5, min: 2, bottleSize: "700ml", cost: 15, supplier: "Night Trade", image: "🍷" },
-  { id: 12, name: "Baileys Irish Cream", category: "Liqueur", stock: 4, min: 2, bottleSize: "700ml", cost: 14, supplier: "Night Trade", image: "🍷" },
+const drinksDataset = [
+
+{ id:1, name:"Absolut Vodka", category:"Vodka", stock:6, min:2, bottleSize:"700ml", cost:12, supplier:"Diageo" },
+{ id:2, name:"Grey Goose Vodka", category:"Vodka", stock:3, min:1, bottleSize:"700ml", cost:28, supplier:"Bacardi" },
+{ id:3, name:"Belvedere Vodka", category:"Vodka", stock:2, min:1, bottleSize:"700ml", cost:30, supplier:"Moët Hennessy" },
+{ id:4, name:"Ciroc Vodka", category:"Vodka", stock:2, min:1, bottleSize:"700ml", cost:32, supplier:"Diageo" },
+
+{ id:5, name:"Jack Daniel's", category:"Whiskey", stock:5, min:2, bottleSize:"700ml", cost:18, supplier:"Brown Forman" },
+{ id:6, name:"Jameson", category:"Whiskey", stock:4, min:2, bottleSize:"700ml", cost:17, supplier:"Pernod Ricard" },
+{ id:7, name:"Chivas Regal 12", category:"Whiskey", stock:3, min:1, bottleSize:"700ml", cost:25, supplier:"Chivas Brothers" },
+{ id:8, name:"Johnnie Walker Black", category:"Whiskey", stock:4, min:2, bottleSize:"700ml", cost:26, supplier:"Diageo" },
+{ id:9, name:"Johnnie Walker Red", category:"Whiskey", stock:5, min:2, bottleSize:"700ml", cost:18, supplier:"Diageo" },
+{ id:10, name:"Maker's Mark", category:"Whiskey", stock:2, min:1, bottleSize:"700ml", cost:29, supplier:"Beam Suntory" },
+
+{ id:11, name:"Bacardi Carta Blanca", category:"Rum", stock:4, min:2, bottleSize:"700ml", cost:14, supplier:"Bacardi" },
+{ id:12, name:"Captain Morgan Spiced", category:"Rum", stock:3, min:1, bottleSize:"700ml", cost:15, supplier:"Diageo" },
+{ id:13, name:"Havana Club 3", category:"Rum", stock:3, min:1, bottleSize:"700ml", cost:16, supplier:"Pernod Ricard" },
+{ id:14, name:"Havana Club 7", category:"Rum", stock:2, min:1, bottleSize:"700ml", cost:22, supplier:"Pernod Ricard" },
+
+{ id:15, name:"Bombay Sapphire", category:"Gin", stock:4, min:2, bottleSize:"700ml", cost:19, supplier:"Bacardi" },
+{ id:16, name:"Tanqueray", category:"Gin", stock:3, min:1, bottleSize:"700ml", cost:18, supplier:"Diageo" },
+{ id:17, name:"Hendrick's Gin", category:"Gin", stock:2, min:1, bottleSize:"700ml", cost:30, supplier:"William Grant" },
+{ id:18, name:"Gordon's Gin", category:"Gin", stock:3, min:1, bottleSize:"700ml", cost:14, supplier:"Diageo" },
+
+{ id:19, name:"Patron Silver", category:"Tequila", stock:2, min:1, bottleSize:"700ml", cost:35, supplier:"Patron Spirits" },
+{ id:20, name:"Don Julio Blanco", category:"Tequila", stock:2, min:1, bottleSize:"700ml", cost:38, supplier:"Diageo" },
+{ id:21, name:"Jose Cuervo", category:"Tequila", stock:3, min:1, bottleSize:"700ml", cost:16, supplier:"Cuervo" },
+
+{ id:22, name:"Jagermeister", category:"Liqueur", stock:3, min:1, bottleSize:"700ml", cost:15, supplier:"Mast-Jägermeister" },
+{ id:23, name:"Baileys", category:"Liqueur", stock:2, min:1, bottleSize:"700ml", cost:14, supplier:"Diageo" },
+{ id:24, name:"Kahlua", category:"Liqueur", stock:2, min:1, bottleSize:"700ml", cost:18, supplier:"Pernod Ricard" },
+{ id:25, name:"Malibu", category:"Liqueur", stock:3, min:1, bottleSize:"700ml", cost:15, supplier:"Pernod Ricard" },
+{ id:26, name:"Cointreau", category:"Liqueur", stock:2, min:1, bottleSize:"700ml", cost:24, supplier:"Remy Cointreau" },
+{ id:27, name:"Aperol", category:"Liqueur", stock:3, min:1, bottleSize:"700ml", cost:16, supplier:"Campari Group" },
+{ id:28, name:"Campari", category:"Liqueur", stock:2, min:1, bottleSize:"700ml", cost:18, supplier:"Campari Group" },
+{ id:29, name:"Amaretto Disaronno", category:"Liqueur", stock:2, min:1, bottleSize:"700ml", cost:20, supplier:"Illva Saronno" },
+{ id:30, name:"Sambuca", category:"Liqueur", stock:2, min:1, bottleSize:"700ml", cost:17, supplier:"Molinari" },
+
+{ id:31, name:"Prosecco", category:"Sparkling Wine", stock:6, min:3, bottleSize:"750ml", cost:9, supplier:"Wine Supplier" },
+{ id:32, name:"Moet & Chandon", category:"Champagne", stock:3, min:1, bottleSize:"750ml", cost:45, supplier:"Moët Hennessy" },
+{ id:33, name:"Veuve Clicquot", category:"Champagne", stock:2, min:1, bottleSize:"750ml", cost:50, supplier:"LVMH" },
+
+{ id:34, name:"Red House Wine", category:"Wine", stock:10, min:5, bottleSize:"750ml", cost:6, supplier:"Wine Supplier" },
+{ id:35, name:"White House Wine", category:"Wine", stock:10, min:5, bottleSize:"750ml", cost:6, supplier:"Wine Supplier" },
+{ id:36, name:"Rose House Wine", category:"Wine", stock:8, min:4, bottleSize:"750ml", cost:6, supplier:"Wine Supplier" },
+
+{ id:37, name:"Angostura Bitters", category:"Bitters", stock:2, min:1, bottleSize:"200ml", cost:12, supplier:"Angostura" },
+{ id:38, name:"Orange Bitters", category:"Bitters", stock:2, min:1, bottleSize:"200ml", cost:11, supplier:"Fee Brothers" },
+
+{ id:39, name:"Triple Sec", category:"Liqueur", stock:3, min:1, bottleSize:"700ml", cost:12, supplier:"De Kuyper" },
+{ id:40, name:"Blue Curacao", category:"Liqueur", stock:2, min:1, bottleSize:"700ml", cost:13, supplier:"De Kuyper" },
+
 ]
 
 const navItems = [
