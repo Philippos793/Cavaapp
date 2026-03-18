@@ -6,13 +6,10 @@ import {
   Bot,
   ChevronRight,
   Menu,
-  Minus,
   Package,
-  Plus,
   Search,
   ShoppingCart,
   Sparkles,
-  TrendingDown,
   TrendingUp,
   Wine,
 } from "lucide-react"
@@ -32,9 +29,10 @@ type Item = {
   id: number
   name: string
   category: string
-  stock: number
-  min: number
-  bottleSize: string
+  bottles: number
+  bottleSizeMl: number
+  openBottleMl: number
+  minBottles: number
   cost: number
   supplier: string
   image: string
@@ -48,29 +46,21 @@ type Message = {
 type ConsumptionLog = {
   id: number
   itemName: string
-  amount: number
+  amountMl: number
   reason: string
   time: string
 }
 
-const drinksDataset: Item[] = [
-  { id: 1, name: "Absolut Vodka", category: "Vodka", stock: 6, min: 2, bottleSize: "700ml", cost: 12, supplier: "Diageo", image: "🍸" },
-  { id: 2, name: "Grey Goose Vodka", category: "Vodka", stock: 3, min: 1, bottleSize: "700ml", cost: 28, supplier: "Bacardi", image: "🍸" },
-  { id: 3, name: "Belvedere Vodka", category: "Vodka", stock: 2, min: 1, bottleSize: "700ml", cost: 30, supplier: "Moët Hennessy", image: "🍸" },
-  { id: 4, name: "Ciroc Vodka", category: "Vodka", stock: 2, min: 1, bottleSize: "700ml", cost: 32, supplier: "Diageo", image: "🍸" },
-  { id: 5, name: "Jack Daniel's", category: "Whiskey", stock: 5, min: 2, bottleSize: "700ml", cost: 18, supplier: "Brown Forman", image: "🥃" },
-  { id: 6, name: "Jameson", category: "Whiskey", stock: 4, min: 2, bottleSize: "700ml", cost: 17, supplier: "Pernod Ricard", image: "🥃" },
-  { id: 7, name: "Chivas Regal 12", category: "Whiskey", stock: 3, min: 1, bottleSize: "700ml", cost: 25, supplier: "Chivas Brothers", image: "🥃" },
-  { id: 8, name: "Johnnie Walker Black", category: "Whiskey", stock: 4, min: 2, bottleSize: "700ml", cost: 26, supplier: "Diageo", image: "🥃" },
-  { id: 9, name: "Bacardi Carta Blanca", category: "Rum", stock: 4, min: 2, bottleSize: "700ml", cost: 14, supplier: "Bacardi", image: "🏝️" },
-  { id: 10, name: "Captain Morgan Spiced", category: "Rum", stock: 3, min: 1, bottleSize: "700ml", cost: 15, supplier: "Diageo", image: "🏝️" },
-  { id: 11, name: "Bombay Sapphire", category: "Gin", stock: 4, min: 2, bottleSize: "700ml", cost: 19, supplier: "Bacardi", image: "🌿" },
-  { id: 12, name: "Tanqueray", category: "Gin", stock: 3, min: 1, bottleSize: "700ml", cost: 18, supplier: "Diageo", image: "🌿" },
-  { id: 13, name: "Patron Silver", category: "Tequila", stock: 2, min: 1, bottleSize: "700ml", cost: 35, supplier: "Patron Spirits", image: "🌵" },
-  { id: 14, name: "Jose Cuervo", category: "Tequila", stock: 3, min: 1, bottleSize: "700ml", cost: 16, supplier: "Cuervo", image: "🌵" },
-  { id: 15, name: "Jagermeister", category: "Liqueur", stock: 3, min: 1, bottleSize: "700ml", cost: 15, supplier: "Mast-Jägermeister", image: "🍷" },
-  { id: 16, name: "Baileys", category: "Liqueur", stock: 2, min: 1, bottleSize: "700ml", cost: 14, supplier: "Diageo", image: "🍷" },
-]
+type CocktailIngredient = {
+  itemName: string
+  ml: number
+}
+
+type Cocktail = {
+  id: number
+  name: string
+  ingredients: CocktailIngredient[]
+}
 
 const navItems = [
   "Dashboard",
@@ -80,39 +70,329 @@ const navItems = [
   "AI Assistant",
 ] as const
 
+const drinksDataset: Item[] = [
+  {
+    id: 1,
+    name: "Absolut Vodka",
+    category: "Vodka",
+    bottles: 6,
+    bottleSizeMl: 700,
+    openBottleMl: 700,
+    minBottles: 2,
+    cost: 12,
+    supplier: "Diageo",
+    image: "🍸",
+  },
+  {
+    id: 2,
+    name: "Grey Goose Vodka",
+    category: "Vodka",
+    bottles: 3,
+    bottleSizeMl: 700,
+    openBottleMl: 520,
+    minBottles: 1,
+    cost: 28,
+    supplier: "Bacardi",
+    image: "🍸",
+  },
+  {
+    id: 3,
+    name: "Gin",
+    category: "Gin",
+    bottles: 4,
+    bottleSizeMl: 700,
+    openBottleMl: 610,
+    minBottles: 2,
+    cost: 18,
+    supplier: "Diageo",
+    image: "🌿",
+  },
+  {
+    id: 4,
+    name: "Campari",
+    category: "Liqueur",
+    bottles: 2,
+    bottleSizeMl: 700,
+    openBottleMl: 430,
+    minBottles: 1,
+    cost: 18,
+    supplier: "Campari Group",
+    image: "🍷",
+  },
+  {
+    id: 5,
+    name: "Red Vermouth",
+    category: "Vermouth",
+    bottles: 2,
+    bottleSizeMl: 700,
+    openBottleMl: 510,
+    minBottles: 1,
+    cost: 14,
+    supplier: "Martini",
+    image: "🍷",
+  },
+  {
+    id: 6,
+    name: "Tequila",
+    category: "Tequila",
+    bottles: 3,
+    bottleSizeMl: 700,
+    openBottleMl: 700,
+    minBottles: 1,
+    cost: 16,
+    supplier: "Cuervo",
+    image: "🌵",
+  },
+  {
+    id: 7,
+    name: "Cointreau",
+    category: "Liqueur",
+    bottles: 2,
+    bottleSizeMl: 700,
+    openBottleMl: 390,
+    minBottles: 1,
+    cost: 24,
+    supplier: "Remy Cointreau",
+    image: "🍷",
+  },
+  {
+    id: 8,
+    name: "White Rum",
+    category: "Rum",
+    bottles: 4,
+    bottleSizeMl: 700,
+    openBottleMl: 640,
+    minBottles: 2,
+    cost: 14,
+    supplier: "Bacardi",
+    image: "🏝️",
+  },
+  {
+    id: 9,
+    name: "Aged Rum",
+    category: "Rum",
+    bottles: 3,
+    bottleSizeMl: 700,
+    openBottleMl: 440,
+    minBottles: 1,
+    cost: 20,
+    supplier: "Havana Club",
+    image: "🏝️",
+  },
+  {
+    id: 10,
+    name: "Whiskey",
+    category: "Whiskey",
+    bottles: 5,
+    bottleSizeMl: 700,
+    openBottleMl: 700,
+    minBottles: 2,
+    cost: 18,
+    supplier: "Jameson",
+    image: "🥃",
+  },
+  {
+    id: 11,
+    name: "Amaretto",
+    category: "Liqueur",
+    bottles: 2,
+    bottleSizeMl: 700,
+    openBottleMl: 340,
+    minBottles: 1,
+    cost: 20,
+    supplier: "Disaronno",
+    image: "🍷",
+  },
+  {
+    id: 12,
+    name: "Cachaca",
+    category: "Cachaca",
+    bottles: 2,
+    bottleSizeMl: 700,
+    openBottleMl: 590,
+    minBottles: 1,
+    cost: 16,
+    supplier: "51",
+    image: "🥃",
+  },
+  {
+    id: 13,
+    name: "Coffee Liqueur",
+    category: "Liqueur",
+    bottles: 2,
+    bottleSizeMl: 700,
+    openBottleMl: 480,
+    minBottles: 1,
+    cost: 18,
+    supplier: "Kahlua",
+    image: "🍷",
+  },
+  {
+    id: 14,
+    name: "Triple Sec",
+    category: "Liqueur",
+    bottles: 2,
+    bottleSizeMl: 700,
+    openBottleMl: 560,
+    minBottles: 1,
+    cost: 12,
+    supplier: "De Kuyper",
+    image: "🍷",
+  },
+]
+
+const cocktails: Cocktail[] = [
+  {
+    id: 1,
+    name: "Negroni",
+    ingredients: [
+      { itemName: "Gin", ml: 35 },
+      { itemName: "Campari", ml: 35 },
+      { itemName: "Red Vermouth", ml: 20 },
+    ],
+  },
+  {
+    id: 2,
+    name: "Margarita",
+    ingredients: [
+      { itemName: "Tequila", ml: 45 },
+      { itemName: "Cointreau", ml: 25 },
+    ],
+  },
+  {
+    id: 3,
+    name: "Cuba Libre",
+    ingredients: [{ itemName: "White Rum", ml: 50 }],
+  },
+  {
+    id: 4,
+    name: "Mai Tai",
+    ingredients: [
+      { itemName: "White Rum", ml: 40 },
+      { itemName: "Aged Rum", ml: 20 },
+      { itemName: "Triple Sec", ml: 15 },
+    ],
+  },
+  {
+    id: 5,
+    name: "Daiquiri Strawberry",
+    ingredients: [{ itemName: "White Rum", ml: 45 }],
+  },
+  {
+    id: 6,
+    name: "Godfather",
+    ingredients: [
+      { itemName: "Whiskey", ml: 45 },
+      { itemName: "Amaretto", ml: 15 },
+    ],
+  },
+  {
+    id: 7,
+    name: "Caipirinha",
+    ingredients: [{ itemName: "Cachaca", ml: 50 }],
+  },
+  {
+    id: 8,
+    name: "Espresso Martini",
+    ingredients: [
+      { itemName: "Absolut Vodka", ml: 45 },
+      { itemName: "Coffee Liqueur", ml: 25 },
+    ],
+  },
+  {
+    id: 9,
+    name: "Cosmopolitan",
+    ingredients: [
+      { itemName: "Absolut Vodka", ml: 40 },
+      { itemName: "Triple Sec", ml: 20 },
+    ],
+  },
+]
+
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "EUR",
 })
 
+function remainingBottlesEquivalent(item: Item) {
+  const fullClosedBottles = Math.max(item.bottles - 1, 0)
+  const openBottleEquivalent = item.openBottleMl / item.bottleSizeMl
+  return (fullClosedBottles + openBottleEquivalent).toFixed(2)
+}
+
+function totalAvailableMl(item: Item) {
+  return Math.max(item.bottles - 1, 0) * item.bottleSizeMl + item.openBottleMl
+}
+
+function isLow(item: Item) {
+  return item.bottles <= item.minBottles
+}
+
+function isUrgent(item: Item) {
+  return item.bottles < item.minBottles
+}
+
+function topCategory(items: Item[]) {
+  const counts = items.reduce<Record<string, number>>((acc, item) => {
+    acc[item.category] = (acc[item.category] || 0) + 1
+    return acc
+  }, {})
+  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || "-"
+}
+
+function consumeFromItem(item: Item, amountMl: number) {
+  let bottles = item.bottles
+  let openBottleMl = item.openBottleMl
+  let remainingToConsume = amountMl
+
+  while (remainingToConsume > 0 && bottles > 0) {
+    if (openBottleMl >= remainingToConsume) {
+      openBottleMl -= remainingToConsume
+      remainingToConsume = 0
+    } else {
+      remainingToConsume -= openBottleMl
+      bottles -= 1
+      openBottleMl = bottles > 0 ? item.bottleSizeMl : 0
+    }
+  }
+
+  return {
+    ...item,
+    bottles,
+    openBottleMl,
+  }
+}
+
 export default function Page() {
-  const [items, setItems] = useState(drinksDataset)
+  const [items, setItems] = useState<Item[]>(drinksDataset)
   const [prompt, setPrompt] = useState("")
   const [search, setSearch] = useState("")
   const [activeTab, setActiveTab] =
     useState<(typeof navItems)[number]>("Dashboard")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [selectedItemId, setSelectedItemId] = useState<number>(drinksDataset[0].id)
+  const [consumptionAmountMl, setConsumptionAmountMl] = useState("50")
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "ai",
-      text: "Welcome to Cavaapp. I can help you monitor stock, reduce losses, and prepare smarter reorders for your bar inventory.",
+      text: "Welcome to Cavaapp. I can help you track bottles, open-bottle ml, cocktail sales and reorder suggestions.",
     },
   ])
-  const [selectedItemId, setSelectedItemId] = useState<number>(drinksDataset[0].id)
-  const [consumptionAmount, setConsumptionAmount] = useState("1")
+
   const [logs, setLogs] = useState<ConsumptionLog[]>([
     {
       id: 1,
-      itemName: "Absolut Vodka",
-      amount: 1,
-      reason: "Shift usage",
+      itemName: "Mai Tai",
+      amountMl: 75,
+      reason: "Cocktail sold",
       time: "10:10",
     },
     {
       id: 2,
-      itemName: "Jameson",
-      amount: 1,
-      reason: "Bar service",
+      itemName: "Negroni",
+      amountMl: 90,
+      reason: "Cocktail sold",
       time: "11:35",
     },
   ])
@@ -128,40 +408,35 @@ export default function Page() {
     )
   }, [items, search])
 
-  const lowItems = items.filter((i) => i.stock <= i.min)
-  const urgentItems = items.filter((i) => i.stock < i.min)
-  const totalUnits = items.reduce((a, b) => a + b.stock, 0)
-  const totalValue = items.reduce((a, b) => a + b.stock * b.cost, 0)
+  const lowItems = items.filter((item) => isLow(item))
+  const urgentItems = items.filter((item) => isUrgent(item))
+
+  const totalValue = items.reduce(
+    (sum, item) =>
+      sum +
+      (Math.max(item.bottles - 1, 0) + item.openBottleMl / item.bottleSizeMl) *
+        item.cost,
+    0
+  )
+
+  const totalBottleEquivalent = items.reduce(
+    (sum, item) =>
+      sum +
+      Math.max(item.bottles - 1, 0) +
+      item.openBottleMl / item.bottleSizeMl,
+    0
+  )
+
   const reorderItems = items
-    .filter((i) => i.stock <= i.min)
-    .map((i) => ({
-      ...i,
-      suggestedOrder: Math.max(i.min * 2 - i.stock, 1),
+    .filter((item) => isLow(item))
+    .map((item) => ({
+      ...item,
+      suggestedOrder: Math.max(item.minBottles * 2 - item.bottles, 1),
     }))
 
-  const selectedItem =
-    items.find((item) => item.id === selectedItemId) ?? items[0]
+  const selectedItem = items.find((item) => item.id === selectedItemId) ?? items[0]
 
-  function adjustStock(id: number, amount: number) {
-    setItems((current) =>
-      current.map((i) =>
-        i.id === id ? { ...i, stock: Math.max(0, i.stock + amount) } : i
-      )
-    )
-  }
-
-  function addConsumption() {
-    const amount = Number(consumptionAmount)
-    if (!selectedItem || !amount || amount <= 0) return
-
-    setItems((current) =>
-      current.map((i) =>
-        i.id === selectedItem.id
-          ? { ...i, stock: Math.max(0, i.stock - amount) }
-          : i
-      )
-    )
-
+  function addLog(itemName: string, amountMl: number, reason: string) {
     const now = new Date()
     const time = now.toLocaleTimeString("el-GR", {
       hour: "2-digit",
@@ -171,12 +446,90 @@ export default function Page() {
     setLogs((prev) => [
       {
         id: Date.now(),
-        itemName: selectedItem.name,
-        amount,
-        reason: "Manual consumption update",
+        itemName,
+        amountMl,
+        reason,
         time,
       },
       ...prev,
+    ])
+  }
+
+  function addBottle(itemId: number) {
+    setItems((current) =>
+      current.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              bottles: item.bottles + 1,
+            }
+          : item
+      )
+    )
+  }
+
+  function addManualConsumption() {
+    const amount = Number(consumptionAmountMl)
+    if (!selectedItem || !amount || amount <= 0) return
+
+    if (totalAvailableMl(selectedItem) < amount) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          text: `Cannot record consumption. Not enough stock for ${selectedItem.name}.`,
+        },
+      ])
+      return
+    }
+
+    setItems((current) =>
+      current.map((item) =>
+        item.id === selectedItem.id ? consumeFromItem(item, amount) : item
+      )
+    )
+
+    addLog(selectedItem.name, amount, "Manual consumption update")
+  }
+
+  function sellCocktail(cocktail: Cocktail) {
+    const missingIngredient = cocktail.ingredients.find((ingredient) => {
+      const item = items.find((i) => i.name === ingredient.itemName)
+      return !item || totalAvailableMl(item) < ingredient.ml
+    })
+
+    if (missingIngredient) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          text: `Cannot prepare ${cocktail.name}. Not enough stock for ${missingIngredient.itemName}.`,
+        },
+      ])
+      return
+    }
+
+    setItems((current) =>
+      current.map((item) => {
+        const ingredient = cocktail.ingredients.find(
+          (ing) => ing.itemName === item.name
+        )
+        if (!ingredient) return item
+        return consumeFromItem(item, ingredient.ml)
+      })
+    )
+
+    const totalUsed = cocktail.ingredients.reduce((sum, ing) => sum + ing.ml, 0)
+    addLog(cocktail.name, totalUsed, "Cocktail sold")
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "ai",
+        text: `${cocktail.name} recorded successfully. Deducted: ${cocktail.ingredients
+          .map((i) => `${i.itemName} ${i.ml}ml`)
+          .join(", ")}.`,
+      },
     ])
   }
 
@@ -192,41 +545,38 @@ export default function Page() {
       text.includes("order") ||
       text.includes("παραγ")
     ) {
-      response = lowItems.length
+      response = reorderItems.length
         ? "Recommended reorder list: " +
-          lowItems
+          reorderItems
             .map(
               (i) =>
-                `${i.name} (${i.stock} left, reorder ${Math.max(i.min * 2 - i.stock, 0)})`
+                `${i.name} (${i.bottles} bottles, reorder ${i.suggestedOrder})`
             )
             .join(", ")
-        : "All bottles are above the minimum threshold right now."
+        : "All items are above minimum thresholds right now."
     } else if (
       text.includes("summary") ||
       text.includes("overview") ||
       text.includes("σύνοψη")
     ) {
-      response = `Inventory summary: ${items.length} labels, ${totalUnits} total bottles, ${lowItems.length} low-stock items, ${urgentItems.length} urgent shortages, estimated value ${money.format(totalValue)}.`
+      response = `Inventory summary: ${items.length} labels, ${totalBottleEquivalent.toFixed(
+        2
+      )} bottle-equivalent stock, ${lowItems.length} low-stock items, ${
+        urgentItems.length
+      } urgent shortages, estimated value ${money.format(totalValue)}.`
     } else if (
-      text.includes("value") ||
-      text.includes("worth") ||
-      text.includes("αξία")
-    ) {
-      response = `Current estimated inventory value is ${money.format(totalValue)}.`
-    } else if (
-      text.includes("supplier") ||
-      text.includes("προμηθευ")
+      text.includes("cocktail") ||
+      text.includes("κοκτει")
     ) {
       response =
-        "Suppliers in active inventory: " +
-        [...new Set(items.map((i) => i.supplier))].join(", ")
+        "Cocktail tracking is active. When you sell a cocktail, I deduct the correct ml from each ingredient and reduce bottle count when a bottle is finished."
     } else if (
       text.includes("loss") ||
       text.includes("απώλ") ||
       text.includes("λάθος")
     ) {
       response =
-        "To reduce losses: record every bottle movement, update daily consumption, reorder only below thresholds, and review supplier decisions in one place."
+        "To reduce losses: record every cocktail sale, track the open bottle, reorder based on minimum bottles, and review consumption logs daily."
     } else {
       response =
         "Try asking: 'What should I reorder today?', 'Give me an inventory summary', or 'How can I reduce losses?'"
@@ -265,7 +615,7 @@ export default function Page() {
                 </div>
                 <p className="mt-2 text-xl font-semibold">Online</p>
                 <p className="mt-1 text-sm text-slate-300">
-                  Monitoring stock, reorder signals and usage.
+                  Monitoring stock, cocktails, reorder signals and usage.
                 </p>
               </div>
             </div>
@@ -303,7 +653,9 @@ export default function Page() {
                 </button>
 
                 <div>
-                  <p className="text-lg font-bold tracking-tight md:text-2xl">Cavaapp</p>
+                  <p className="text-lg font-bold tracking-tight md:text-2xl">
+                    Cavaapp
+                  </p>
                   <p className="text-xs text-slate-500 md:text-sm">
                     Inventory control for bars & restaurants
                   </p>
@@ -357,8 +709,8 @@ export default function Page() {
                       Manage your bar inventory with clarity
                     </h1>
                     <p className="mt-3 max-w-2xl text-sm text-slate-300 md:text-base">
-                      Built for real venues. Track bottle stock, monitor consumption,
-                      avoid ordering mistakes, and keep your cava organized across web and mobile.
+                      Track bottles, open-bottle ml, sell real cocktails, reduce
+                      losses, and manage your cava from one place.
                     </p>
                   </div>
                 </div>
@@ -366,7 +718,10 @@ export default function Page() {
                 <div className="grid gap-3 sm:grid-cols-3">
                   <HeroMetric title="Labels" value={String(items.length)} />
                   <HeroMetric title="Low stock" value={String(lowItems.length)} />
-                  <HeroMetric title="Inventory value" value={money.format(totalValue)} />
+                  <HeroMetric
+                    title="Inventory value"
+                    value={money.format(totalValue)}
+                  />
                 </div>
               </div>
             </section>
@@ -375,27 +730,27 @@ export default function Page() {
               <div className="space-y-6">
                 <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                   <StatCard
-                    title="Total Bottles"
-                    value={String(totalUnits)}
-                    subtitle="Across the full inventory"
+                    title="Bottle Equivalent"
+                    value={totalBottleEquivalent.toFixed(2)}
+                    subtitle="Remaining stock in bottle equivalent"
                     icon={<Package className="h-5 w-5" />}
                   />
                   <StatCard
                     title="Urgent Shortages"
                     value={String(urgentItems.length)}
-                    subtitle="Below minimum threshold"
+                    subtitle="Below minimum bottle threshold"
                     icon={<AlertTriangle className="h-5 w-5" />}
                   />
                   <StatCard
                     title="Top Category"
                     value={topCategory(items)}
-                    subtitle="Most represented bottle type"
+                    subtitle="Most represented spirit type"
                     icon={<Wine className="h-5 w-5" />}
                   />
                   <StatCard
                     title="Reorder Signals"
-                    value={String(lowItems.length)}
-                    subtitle="Items needing close attention"
+                    value={String(reorderItems.length)}
+                    subtitle="Items needing reorder attention"
                     icon={<ShoppingCart className="h-5 w-5" />}
                   />
                 </section>
@@ -405,21 +760,21 @@ export default function Page() {
                     <CardHeader>
                       <CardTitle className="text-2xl">Dashboard Overview</CardTitle>
                       <CardDescription>
-                        A quick view of the current health of your cava.
+                        Quick health check of your bar inventory.
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <InsightRow
                         icon={<AlertTriangle className="h-4 w-4" />}
-                        text={`${lowItems.length} bottle labels need attention before next service.`}
+                        text={`${lowItems.length} items are low based on minimum bottles.`}
                       />
                       <InsightRow
                         icon={<ShoppingCart className="h-4 w-4" />}
-                        text={`${reorderItems.length} items are candidates for reorder.`}
+                        text={`${reorderItems.length} items have reorder suggestions ready.`}
                       />
                       <InsightRow
                         icon={<TrendingUp className="h-4 w-4" />}
-                        text={`Current inventory value is ${money.format(totalValue)} across ${totalUnits} bottles.`}
+                        text={`Current inventory value is ${money.format(totalValue)}.`}
                       />
                     </CardContent>
                   </Card>
@@ -428,28 +783,28 @@ export default function Page() {
                     <CardHeader>
                       <CardTitle className="text-2xl">Quick Actions</CardTitle>
                       <CardDescription>
-                        Jump quickly to the most important tasks.
+                        Move quickly to the most important tasks.
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <ActionBox
                         title="Open Inventory"
-                        text="Review all items and stock levels."
+                        text="Review bottles, open-bottle ml, suppliers and stock."
                         onClick={() => setActiveTab("Inventory")}
                       />
                       <ActionBox
                         title="Record Consumption"
-                        text="Subtract used bottles from cava."
+                        text="Update ml usage or sell a cocktail."
                         onClick={() => setActiveTab("Consumption")}
                       />
                       <ActionBox
                         title="Review Orders"
-                        text="Check low-stock reorder suggestions."
+                        text="Check reorder suggestions."
                         onClick={() => setActiveTab("Orders")}
                       />
                       <ActionBox
                         title="Ask AI Assistant"
-                        text="Get a quick summary or reorder advice."
+                        text="Get summary and loss prevention advice."
                         onClick={() => setActiveTab("AI Assistant")}
                       />
                     </CardContent>
@@ -466,7 +821,7 @@ export default function Page() {
                       <div>
                         <CardTitle className="text-2xl">Inventory</CardTitle>
                         <CardDescription>
-                          The cava of the store, with bottles, suppliers, costs and live stock.
+                          Full cava view with bottles, open bottle ml, costs and suppliers.
                         </CardDescription>
                       </div>
 
@@ -485,8 +840,8 @@ export default function Page() {
                   <CardContent>
                     <div className="space-y-3">
                       {filteredItems.map((item) => {
-                        const low = item.stock <= item.min
-                        const urgent = item.stock < item.min
+                        const low = isLow(item)
+                        const urgent = isUrgent(item)
 
                         return (
                           <div
@@ -497,7 +852,7 @@ export default function Page() {
                               <div className="min-w-0 space-y-3">
                                 <div className="flex flex-wrap items-center gap-3">
                                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
-                                    {item.image ?? "🍾"}
+                                    {item.image}
                                   </div>
 
                                   <div className="min-w-0">
@@ -510,7 +865,7 @@ export default function Page() {
                                         {item.category}
                                       </Badge>
                                       <Badge variant="outline" className="rounded-full">
-                                        {item.bottleSize}
+                                        {item.bottleSizeMl}ml
                                       </Badge>
                                       {low && (
                                         <Badge
@@ -524,10 +879,20 @@ export default function Page() {
                                   </div>
                                 </div>
 
-                                <div className="grid gap-2 text-sm text-slate-600 sm:grid-cols-2 xl:grid-cols-4">
-                                  <InfoPill label="Stock" value={`${item.stock} bottles`} />
-                                  <InfoPill label="Minimum" value={`${item.min} bottles`} />
-                                  <InfoPill label="Unit Cost" value={money.format(item.cost)} />
+                                <div className="grid gap-2 text-sm text-slate-600 sm:grid-cols-2 xl:grid-cols-5">
+                                  <InfoPill label="Bottles" value={`${item.bottles}`} />
+                                  <InfoPill
+                                    label="Open Bottle"
+                                    value={`${item.openBottleMl} ml`}
+                                  />
+                                  <InfoPill
+                                    label="Bottle Eq."
+                                    value={remainingBottlesEquivalent(item)}
+                                  />
+                                  <InfoPill
+                                    label="Min Bottles"
+                                    value={`${item.minBottles}`}
+                                  />
                                   <InfoPill label="Supplier" value={item.supplier} />
                                 </div>
                               </div>
@@ -536,16 +901,9 @@ export default function Page() {
                                 <Button
                                   variant="outline"
                                   className="rounded-xl"
-                                  onClick={() => adjustStock(item.id, -1)}
+                                  onClick={() => addBottle(item.id)}
                                 >
-                                  <Minus className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  className="rounded-xl"
-                                  onClick={() => adjustStock(item.id, 1)}
-                                >
-                                  <Plus className="h-4 w-4" />
+                                  +1 Bottle
                                 </Button>
                               </div>
                             </div>
@@ -559,12 +917,12 @@ export default function Page() {
             )}
 
             {activeTab === "Consumption" && (
-              <section className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
+              <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
                 <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
                   <CardHeader>
-                    <CardTitle className="text-2xl">Consumption</CardTitle>
+                    <CardTitle className="text-2xl">Manual Consumption</CardTitle>
                     <CardDescription>
-                      Record consumed bottles so inventory stays accurate.
+                      Manually subtract ml from the selected bottle.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -585,56 +943,87 @@ export default function Page() {
                             </div>
                             <div>
                               <p className="font-semibold">{item.name}</p>
-                              <p className={`text-sm ${selectedItemId === item.id ? "text-slate-300" : "text-slate-500"}`}>
-                                Stock: {item.stock} bottles
+                              <p
+                                className={`text-sm ${
+                                  selectedItemId === item.id
+                                    ? "text-slate-300"
+                                    : "text-slate-500"
+                                }`}
+                              >
+                                Bottles: {item.bottles} • Open bottle: {item.openBottleMl}ml
                               </p>
                             </div>
                           </div>
                         </button>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
 
-                <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
-                  <CardHeader>
-                    <CardTitle className="text-2xl">Update Stock by Usage</CardTitle>
-                    <CardDescription>
-                      Subtract used quantity from the selected product.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
                     <div className="rounded-2xl bg-slate-50 p-4">
                       <p className="text-sm text-slate-500">Selected item</p>
-                      <p className="mt-1 text-xl font-semibold">{selectedItem?.name}</p>
+                      <p className="mt-1 text-xl font-semibold">
+                        {selectedItem?.name}
+                      </p>
                       <p className="mt-1 text-sm text-slate-500">
-                        Current stock: {selectedItem?.stock} bottles
+                        Bottles: {selectedItem?.bottles} • Open bottle: {selectedItem?.openBottleMl}ml
                       </p>
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">Consumed quantity</p>
-                      <Input
-                        type="number"
-                        value={consumptionAmount}
-                        onChange={(e) => setConsumptionAmount(e.target.value)}
-                        placeholder="1"
-                        className="rounded-xl"
-                      />
-                    </div>
+                    <Input
+                      type="number"
+                      value={consumptionAmountMl}
+                      onChange={(e) => setConsumptionAmountMl(e.target.value)}
+                      placeholder="50"
+                      className="rounded-xl"
+                    />
 
                     <div className="flex gap-2">
-                      <Button className="rounded-xl" onClick={addConsumption}>
+                      <Button className="rounded-xl" onClick={addManualConsumption}>
                         Save Consumption
                       </Button>
                       <Button
                         variant="outline"
                         className="rounded-xl"
-                        onClick={() => adjustStock(selectedItemId, 1)}
+                        onClick={() => addBottle(selectedItemId)}
                       >
                         Add Bottle
                       </Button>
                     </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Real Cocktails</CardTitle>
+                    <CardDescription>
+                      Sell cocktails and deduct the right ml from each ingredient.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {cocktails.map((cocktail) => (
+                      <div
+                        key={cocktail.id}
+                        className="rounded-2xl border border-slate-200 bg-white p-4"
+                      >
+                        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                          <div>
+                            <p className="font-semibold">{cocktail.name}</p>
+                            <p className="mt-1 text-sm text-slate-500">
+                              {cocktail.ingredients
+                                .map((i) => `${i.itemName} ${i.ml}ml`)
+                                .join(" • ")}
+                            </p>
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            className="rounded-xl"
+                            onClick={() => sellCocktail(cocktail)}
+                          >
+                            Sell Cocktail
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
               </section>
@@ -646,7 +1035,7 @@ export default function Page() {
                   <CardHeader>
                     <CardTitle className="text-2xl">Orders</CardTitle>
                     <CardDescription>
-                      Suggested restocks based on current minimum thresholds.
+                      Suggested reorders based on bottle thresholds.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -664,7 +1053,8 @@ export default function Page() {
                             <div>
                               <p className="font-semibold">{item.name}</p>
                               <p className="mt-1 text-sm text-slate-500">
-                                Stock {item.stock} / Min {item.min} • {item.supplier}
+                                Bottles {item.bottles} • Open bottle {item.openBottleMl}ml •
+                                Min {item.minBottles} bottles • {item.supplier}
                               </p>
                             </div>
                             <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm">
@@ -684,7 +1074,7 @@ export default function Page() {
                   <CardHeader>
                     <CardTitle className="text-2xl">Supplier Summary</CardTitle>
                     <CardDescription>
-                      Overview of suppliers currently active in inventory.
+                      Current suppliers active in your inventory.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -717,7 +1107,7 @@ export default function Page() {
                       <CardTitle className="text-2xl">Cavaapp AI Assistant</CardTitle>
                     </div>
                     <CardDescription>
-                      Ask practical questions and get help with stock, orders and loss prevention.
+                      Ask about stock, open bottles, cocktails and reorders.
                     </CardDescription>
                   </CardHeader>
 
@@ -780,7 +1170,7 @@ export default function Page() {
                   <CardHeader>
                     <CardTitle className="text-2xl">Recent Consumption</CardTitle>
                     <CardDescription>
-                      Latest stock deductions recorded in the system.
+                      Latest manual or cocktail-based deductions.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
@@ -797,7 +1187,7 @@ export default function Page() {
                             </p>
                           </div>
                           <div className="text-right text-sm">
-                            <p className="font-semibold">-{log.amount}</p>
+                            <p className="font-semibold">-{log.amountMl}ml</p>
                             <p className="text-slate-400">{log.time}</p>
                           </div>
                         </div>
@@ -886,12 +1276,4 @@ function ActionBox({
       <p className="mt-1 text-sm text-slate-500">{text}</p>
     </button>
   )
-}
-
-function topCategory(items: { category: string }[]) {
-  const counts = items.reduce<Record<string, number>>((acc, item) => {
-    acc[item.category] = (acc[item.category] || 0) + 1
-    return acc
-  }, {})
-  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || "-"
 }
