@@ -12,13 +12,20 @@ import {
   Search,
   ShoppingCart,
   Sparkles,
+  TrendingDown,
   TrendingUp,
   Wine,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
 type Item = {
@@ -33,56 +40,36 @@ type Item = {
   image: string
 }
 
-const drinksDataset = [
+type Message = {
+  role: "ai" | "user"
+  text: string
+}
+
+type ConsumptionLog = {
+  id: number
+  itemName: string
+  amount: number
+  reason: string
+  time: string
+}
+
+const drinksDataset: Item[] = [
   { id: 1, name: "Absolut Vodka", category: "Vodka", stock: 6, min: 2, bottleSize: "700ml", cost: 12, supplier: "Diageo", image: "🍸" },
   { id: 2, name: "Grey Goose Vodka", category: "Vodka", stock: 3, min: 1, bottleSize: "700ml", cost: 28, supplier: "Bacardi", image: "🍸" },
   { id: 3, name: "Belvedere Vodka", category: "Vodka", stock: 2, min: 1, bottleSize: "700ml", cost: 30, supplier: "Moët Hennessy", image: "🍸" },
   { id: 4, name: "Ciroc Vodka", category: "Vodka", stock: 2, min: 1, bottleSize: "700ml", cost: 32, supplier: "Diageo", image: "🍸" },
-
   { id: 5, name: "Jack Daniel's", category: "Whiskey", stock: 5, min: 2, bottleSize: "700ml", cost: 18, supplier: "Brown Forman", image: "🥃" },
   { id: 6, name: "Jameson", category: "Whiskey", stock: 4, min: 2, bottleSize: "700ml", cost: 17, supplier: "Pernod Ricard", image: "🥃" },
   { id: 7, name: "Chivas Regal 12", category: "Whiskey", stock: 3, min: 1, bottleSize: "700ml", cost: 25, supplier: "Chivas Brothers", image: "🥃" },
   { id: 8, name: "Johnnie Walker Black", category: "Whiskey", stock: 4, min: 2, bottleSize: "700ml", cost: 26, supplier: "Diageo", image: "🥃" },
-  { id: 9, name: "Johnnie Walker Red", category: "Whiskey", stock: 5, min: 2, bottleSize: "700ml", cost: 18, supplier: "Diageo", image: "🥃" },
-  { id: 10, name: "Maker's Mark", category: "Whiskey", stock: 2, min: 1, bottleSize: "700ml", cost: 29, supplier: "Beam Suntory", image: "🥃" },
-
-  { id: 11, name: "Bacardi Carta Blanca", category: "Rum", stock: 4, min: 2, bottleSize: "700ml", cost: 14, supplier: "Bacardi", image: "🏝️" },
-  { id: 12, name: "Captain Morgan Spiced", category: "Rum", stock: 3, min: 1, bottleSize: "700ml", cost: 15, supplier: "Diageo", image: "🏝️" },
-  { id: 13, name: "Havana Club 3", category: "Rum", stock: 3, min: 1, bottleSize: "700ml", cost: 16, supplier: "Pernod Ricard", image: "🏝️" },
-  { id: 14, name: "Havana Club 7", category: "Rum", stock: 2, min: 1, bottleSize: "700ml", cost: 22, supplier: "Pernod Ricard", image: "🏝️" },
-
-  { id: 15, name: "Bombay Sapphire", category: "Gin", stock: 4, min: 2, bottleSize: "700ml", cost: 19, supplier: "Bacardi", image: "🌿" },
-  { id: 16, name: "Tanqueray", category: "Gin", stock: 3, min: 1, bottleSize: "700ml", cost: 18, supplier: "Diageo", image: "🌿" },
-  { id: 17, name: "Hendrick's Gin", category: "Gin", stock: 2, min: 1, bottleSize: "700ml", cost: 30, supplier: "William Grant", image: "🌿" },
-  { id: 18, name: "Gordon's Gin", category: "Gin", stock: 3, min: 1, bottleSize: "700ml", cost: 14, supplier: "Diageo", image: "🌿" },
-
-  { id: 19, name: "Patron Silver", category: "Tequila", stock: 2, min: 1, bottleSize: "700ml", cost: 35, supplier: "Patron Spirits", image: "🌵" },
-  { id: 20, name: "Don Julio Blanco", category: "Tequila", stock: 2, min: 1, bottleSize: "700ml", cost: 38, supplier: "Diageo", image: "🌵" },
-  { id: 21, name: "Jose Cuervo", category: "Tequila", stock: 3, min: 1, bottleSize: "700ml", cost: 16, supplier: "Cuervo", image: "🌵" },
-
-  { id: 22, name: "Jagermeister", category: "Liqueur", stock: 3, min: 1, bottleSize: "700ml", cost: 15, supplier: "Mast-Jägermeister", image: "🍷" },
-  { id: 23, name: "Baileys", category: "Liqueur", stock: 2, min: 1, bottleSize: "700ml", cost: 14, supplier: "Diageo", image: "🍷" },
-  { id: 24, name: "Kahlua", category: "Liqueur", stock: 2, min: 1, bottleSize: "700ml", cost: 18, supplier: "Pernod Ricard", image: "🍷" },
-  { id: 25, name: "Malibu", category: "Liqueur", stock: 3, min: 1, bottleSize: "700ml", cost: 15, supplier: "Pernod Ricard", image: "🍷" },
-  { id: 26, name: "Cointreau", category: "Liqueur", stock: 2, min: 1, bottleSize: "700ml", cost: 24, supplier: "Remy Cointreau", image: "🍷" },
-  { id: 27, name: "Aperol", category: "Liqueur", stock: 3, min: 1, bottleSize: "700ml", cost: 16, supplier: "Campari Group", image: "🍷" },
-  { id: 28, name: "Campari", category: "Liqueur", stock: 2, min: 1, bottleSize: "700ml", cost: 18, supplier: "Campari Group", image: "🍷" },
-  { id: 29, name: "Amaretto Disaronno", category: "Liqueur", stock: 2, min: 1, bottleSize: "700ml", cost: 20, supplier: "Illva Saronno", image: "🍷" },
-  { id: 30, name: "Sambuca", category: "Liqueur", stock: 2, min: 1, bottleSize: "700ml", cost: 17, supplier: "Molinari", image: "🍷" },
-
-  { id: 31, name: "Prosecco", category: "Sparkling Wine", stock: 6, min: 3, bottleSize: "750ml", cost: 9, supplier: "Wine Supplier", image: "🍾" },
-  { id: 32, name: "Moet & Chandon", category: "Champagne", stock: 3, min: 1, bottleSize: "750ml", cost: 45, supplier: "Moët Hennessy", image: "🍾" },
-  { id: 33, name: "Veuve Clicquot", category: "Champagne", stock: 2, min: 1, bottleSize: "750ml", cost: 50, supplier: "LVMH", image: "🍾" },
-
-  { id: 34, name: "Red House Wine", category: "Wine", stock: 10, min: 5, bottleSize: "750ml", cost: 6, supplier: "Wine Supplier", image: "🍷" },
-  { id: 35, name: "White House Wine", category: "Wine", stock: 10, min: 5, bottleSize: "750ml", cost: 6, supplier: "Wine Supplier", image: "🍷" },
-  { id: 36, name: "Rose House Wine", category: "Wine", stock: 8, min: 4, bottleSize: "750ml", cost: 6, supplier: "Wine Supplier", image: "🍷" },
-
-  { id: 37, name: "Angostura Bitters", category: "Bitters", stock: 2, min: 1, bottleSize: "200ml", cost: 12, supplier: "Angostura", image: "🧴" },
-  { id: 38, name: "Orange Bitters", category: "Bitters", stock: 2, min: 1, bottleSize: "200ml", cost: 11, supplier: "Fee Brothers", image: "🧴" },
-
-  { id: 39, name: "Triple Sec", category: "Liqueur", stock: 3, min: 1, bottleSize: "700ml", cost: 12, supplier: "De Kuyper", image: "🍷" },
-  { id: 40, name: "Blue Curacao", category: "Liqueur", stock: 2, min: 1, bottleSize: "700ml", cost: 13, supplier: "De Kuyper", image: "🍷" },
+  { id: 9, name: "Bacardi Carta Blanca", category: "Rum", stock: 4, min: 2, bottleSize: "700ml", cost: 14, supplier: "Bacardi", image: "🏝️" },
+  { id: 10, name: "Captain Morgan Spiced", category: "Rum", stock: 3, min: 1, bottleSize: "700ml", cost: 15, supplier: "Diageo", image: "🏝️" },
+  { id: 11, name: "Bombay Sapphire", category: "Gin", stock: 4, min: 2, bottleSize: "700ml", cost: 19, supplier: "Bacardi", image: "🌿" },
+  { id: 12, name: "Tanqueray", category: "Gin", stock: 3, min: 1, bottleSize: "700ml", cost: 18, supplier: "Diageo", image: "🌿" },
+  { id: 13, name: "Patron Silver", category: "Tequila", stock: 2, min: 1, bottleSize: "700ml", cost: 35, supplier: "Patron Spirits", image: "🌵" },
+  { id: 14, name: "Jose Cuervo", category: "Tequila", stock: 3, min: 1, bottleSize: "700ml", cost: 16, supplier: "Cuervo", image: "🌵" },
+  { id: 15, name: "Jagermeister", category: "Liqueur", stock: 3, min: 1, bottleSize: "700ml", cost: 15, supplier: "Mast-Jägermeister", image: "🍷" },
+  { id: 16, name: "Baileys", category: "Liqueur", stock: 2, min: 1, bottleSize: "700ml", cost: 14, supplier: "Diageo", image: "🍷" },
 ]
 
 const navItems = [
@@ -91,7 +78,7 @@ const navItems = [
   "Consumption",
   "Orders",
   "AI Assistant",
-]
+] as const
 
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -102,12 +89,31 @@ export default function Page() {
   const [items, setItems] = useState(drinksDataset)
   const [prompt, setPrompt] = useState("")
   const [search, setSearch] = useState("")
-  const [activeTab, setActiveTab] = useState("Dashboard")
+  const [activeTab, setActiveTab] =
+    useState<(typeof navItems)[number]>("Dashboard")
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       role: "ai",
       text: "Welcome to Cavaapp. I can help you monitor stock, reduce losses, and prepare smarter reorders for your bar inventory.",
+    },
+  ])
+  const [selectedItemId, setSelectedItemId] = useState<number>(drinksDataset[0].id)
+  const [consumptionAmount, setConsumptionAmount] = useState("1")
+  const [logs, setLogs] = useState<ConsumptionLog[]>([
+    {
+      id: 1,
+      itemName: "Absolut Vodka",
+      amount: 1,
+      reason: "Shift usage",
+      time: "10:10",
+    },
+    {
+      id: 2,
+      itemName: "Jameson",
+      amount: 1,
+      reason: "Bar service",
+      time: "11:35",
     },
   ])
 
@@ -126,6 +132,15 @@ export default function Page() {
   const urgentItems = items.filter((i) => i.stock < i.min)
   const totalUnits = items.reduce((a, b) => a + b.stock, 0)
   const totalValue = items.reduce((a, b) => a + b.stock * b.cost, 0)
+  const reorderItems = items
+    .filter((i) => i.stock <= i.min)
+    .map((i) => ({
+      ...i,
+      suggestedOrder: Math.max(i.min * 2 - i.stock, 1),
+    }))
+
+  const selectedItem =
+    items.find((item) => item.id === selectedItemId) ?? items[0]
 
   function adjustStock(id: number, amount: number) {
     setItems((current) =>
@@ -133,6 +148,36 @@ export default function Page() {
         i.id === id ? { ...i, stock: Math.max(0, i.stock + amount) } : i
       )
     )
+  }
+
+  function addConsumption() {
+    const amount = Number(consumptionAmount)
+    if (!selectedItem || !amount || amount <= 0) return
+
+    setItems((current) =>
+      current.map((i) =>
+        i.id === selectedItem.id
+          ? { ...i, stock: Math.max(0, i.stock - amount) }
+          : i
+      )
+    )
+
+    const now = new Date()
+    const time = now.toLocaleTimeString("el-GR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+
+    setLogs((prev) => [
+      {
+        id: Date.now(),
+        itemName: selectedItem.name,
+        amount,
+        reason: "Manual consumption update",
+        time,
+      },
+      ...prev,
+    ])
   }
 
   function askAgent(customPrompt?: string) {
@@ -150,7 +195,10 @@ export default function Page() {
       response = lowItems.length
         ? "Recommended reorder list: " +
           lowItems
-            .map((i) => `${i.name} (${i.stock} left, reorder ${Math.max(i.min * 2 - i.stock, 0)})`)
+            .map(
+              (i) =>
+                `${i.name} (${i.stock} left, reorder ${Math.max(i.min * 2 - i.stock, 0)})`
+            )
             .join(", ")
         : "All bottles are above the minimum threshold right now."
     } else if (
@@ -169,15 +217,19 @@ export default function Page() {
       text.includes("supplier") ||
       text.includes("προμηθευ")
     ) {
-      response = "Suppliers in active inventory: " + [...new Set(items.map((i) => i.supplier))].join(", ")
+      response =
+        "Suppliers in active inventory: " +
+        [...new Set(items.map((i) => i.supplier))].join(", ")
     } else if (
       text.includes("loss") ||
       text.includes("απώλ") ||
       text.includes("λάθος")
     ) {
-      response = "To reduce losses: record every bottle movement, only reorder below threshold, check start/end of shift counts, and keep supplier recommendations centralized."
+      response =
+        "To reduce losses: record every bottle movement, update daily consumption, reorder only below thresholds, and review supplier decisions in one place."
     } else {
-      response = "Try asking: 'What should I reorder today?', 'Give me an inventory summary', or 'How can I reduce losses?'"
+      response =
+        "Try asking: 'What should I reorder today?', 'Give me an inventory summary', or 'How can I reduce losses?'"
     }
 
     setMessages((prev) => [
@@ -236,15 +288,6 @@ export default function Page() {
                 ))}
               </div>
             </nav>
-
-            <div className="border-t border-slate-200 p-4">
-              <div className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm font-semibold">Cavaapp Mobile Ready</p>
-                <p className="mt-1 text-sm text-slate-500">
-                  Responsive layout for desktop, tablet and phone.
-                </p>
-              </div>
-            </div>
           </div>
         </aside>
 
@@ -328,35 +371,95 @@ export default function Page() {
               </div>
             </section>
 
-            <section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <StatCard
-                title="Total Bottles"
-                value={String(totalUnits)}
-                subtitle="Across the full inventory"
-                icon={<Package className="h-5 w-5" />}
-              />
-              <StatCard
-                title="Urgent Shortages"
-                value={String(urgentItems.length)}
-                subtitle="Below minimum threshold"
-                icon={<AlertTriangle className="h-5 w-5" />}
-              />
-              <StatCard
-                title="Top Category"
-                value={topCategory(items)}
-                subtitle="Most represented bottle type"
-                icon={<Wine className="h-5 w-5" />}
-              />
-              <StatCard
-                title="Reorder Signals"
-                value={String(lowItems.length)}
-                subtitle="Items needing close attention"
-                icon={<ShoppingCart className="h-5 w-5" />}
-              />
-            </section>
-
-            <section className="grid gap-6 2xl:grid-cols-[1.2fr_0.8fr]">
+            {activeTab === "Dashboard" && (
               <div className="space-y-6">
+                <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                  <StatCard
+                    title="Total Bottles"
+                    value={String(totalUnits)}
+                    subtitle="Across the full inventory"
+                    icon={<Package className="h-5 w-5" />}
+                  />
+                  <StatCard
+                    title="Urgent Shortages"
+                    value={String(urgentItems.length)}
+                    subtitle="Below minimum threshold"
+                    icon={<AlertTriangle className="h-5 w-5" />}
+                  />
+                  <StatCard
+                    title="Top Category"
+                    value={topCategory(items)}
+                    subtitle="Most represented bottle type"
+                    icon={<Wine className="h-5 w-5" />}
+                  />
+                  <StatCard
+                    title="Reorder Signals"
+                    value={String(lowItems.length)}
+                    subtitle="Items needing close attention"
+                    icon={<ShoppingCart className="h-5 w-5" />}
+                  />
+                </section>
+
+                <section className="grid gap-6 2xl:grid-cols-[1.2fr_0.8fr]">
+                  <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
+                    <CardHeader>
+                      <CardTitle className="text-2xl">Dashboard Overview</CardTitle>
+                      <CardDescription>
+                        A quick view of the current health of your cava.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <InsightRow
+                        icon={<AlertTriangle className="h-4 w-4" />}
+                        text={`${lowItems.length} bottle labels need attention before next service.`}
+                      />
+                      <InsightRow
+                        icon={<ShoppingCart className="h-4 w-4" />}
+                        text={`${reorderItems.length} items are candidates for reorder.`}
+                      />
+                      <InsightRow
+                        icon={<TrendingUp className="h-4 w-4" />}
+                        text={`Current inventory value is ${money.format(totalValue)} across ${totalUnits} bottles.`}
+                      />
+                    </CardContent>
+                  </Card>
+
+                  <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
+                    <CardHeader>
+                      <CardTitle className="text-2xl">Quick Actions</CardTitle>
+                      <CardDescription>
+                        Jump quickly to the most important tasks.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <ActionBox
+                        title="Open Inventory"
+                        text="Review all items and stock levels."
+                        onClick={() => setActiveTab("Inventory")}
+                      />
+                      <ActionBox
+                        title="Record Consumption"
+                        text="Subtract used bottles from cava."
+                        onClick={() => setActiveTab("Consumption")}
+                      />
+                      <ActionBox
+                        title="Review Orders"
+                        text="Check low-stock reorder suggestions."
+                        onClick={() => setActiveTab("Orders")}
+                      />
+                      <ActionBox
+                        title="Ask AI Assistant"
+                        text="Get a quick summary or reorder advice."
+                        onClick={() => setActiveTab("AI Assistant")}
+                      />
+                    </CardContent>
+                  </Card>
+                </section>
+              </div>
+            )}
+
+            {activeTab === "Inventory" && (
+              <section>
                 <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
                   <CardHeader className="space-y-4">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -394,7 +497,7 @@ export default function Page() {
                               <div className="min-w-0 space-y-3">
                                 <div className="flex flex-wrap items-center gap-3">
                                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
-                                    {item.image}
+                                    {item.image ?? "🍾"}
                                   </div>
 
                                   <div className="min-w-0">
@@ -452,59 +555,161 @@ export default function Page() {
                     </div>
                   </CardContent>
                 </Card>
+              </section>
+            )}
 
-                <div className="grid gap-6 lg:grid-cols-2">
-                  <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
-                    <CardHeader>
-                      <CardTitle className="text-xl">Quick Actions</CardTitle>
-                      <CardDescription>
-                        Simple actions for staff to avoid stock mistakes.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <ActionBox
-                        title="Opening stock check"
-                        text="Review all low items before service begins."
-                      />
-                      <ActionBox
-                        title="Consumption update"
-                        text="Deduct bottles after usage or drink preparation."
-                      />
-                      <ActionBox
-                        title="Receive supplier order"
-                        text="Add new bottles after delivery."
-                      />
-                    </CardContent>
-                  </Card>
-
-                  <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
-                    <CardHeader>
-                      <CardTitle className="text-xl">Reorder Priorities</CardTitle>
-                      <CardDescription>
-                        The most important products to restock first.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      {lowItems.length === 0 ? (
-                        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
-                          No urgent reorder priorities right now.
-                        </div>
-                      ) : (
-                        lowItems.slice(0, 4).map((item) => (
-                          <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                            <p className="font-medium">{item.name}</p>
-                            <p className="mt-1 text-sm text-slate-500">
-                              Stock {item.stock} / Min {item.min} • {item.supplier}
-                            </p>
+            {activeTab === "Consumption" && (
+              <section className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
+                <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Consumption</CardTitle>
+                    <CardDescription>
+                      Record consumed bottles so inventory stays accurate.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid gap-3">
+                      {items.map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setSelectedItemId(item.id)}
+                          className={`rounded-2xl border p-4 text-left ${
+                            selectedItemId === item.id
+                              ? "border-slate-900 bg-slate-900 text-white"
+                              : "border-slate-200 bg-white"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
+                              {item.image}
+                            </div>
+                            <div>
+                              <p className="font-semibold">{item.name}</p>
+                              <p className={`text-sm ${selectedItemId === item.id ? "text-slate-300" : "text-slate-500"}`}>
+                                Stock: {item.stock} bottles
+                              </p>
+                            </div>
                           </div>
-                        ))
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
+                        </button>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
 
-              <div className="space-y-6">
+                <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Update Stock by Usage</CardTitle>
+                    <CardDescription>
+                      Subtract used quantity from the selected product.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="rounded-2xl bg-slate-50 p-4">
+                      <p className="text-sm text-slate-500">Selected item</p>
+                      <p className="mt-1 text-xl font-semibold">{selectedItem?.name}</p>
+                      <p className="mt-1 text-sm text-slate-500">
+                        Current stock: {selectedItem?.stock} bottles
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">Consumed quantity</p>
+                      <Input
+                        type="number"
+                        value={consumptionAmount}
+                        onChange={(e) => setConsumptionAmount(e.target.value)}
+                        placeholder="1"
+                        className="rounded-xl"
+                      />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button className="rounded-xl" onClick={addConsumption}>
+                        Save Consumption
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="rounded-xl"
+                        onClick={() => adjustStock(selectedItemId, 1)}
+                      >
+                        Add Bottle
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
+            {activeTab === "Orders" && (
+              <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+                <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Orders</CardTitle>
+                    <CardDescription>
+                      Suggested restocks based on current minimum thresholds.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {reorderItems.length === 0 ? (
+                      <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+                        No reorder suggestions right now.
+                      </div>
+                    ) : (
+                      reorderItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="rounded-2xl border border-slate-200 bg-white p-4"
+                        >
+                          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                            <div>
+                              <p className="font-semibold">{item.name}</p>
+                              <p className="mt-1 text-sm text-slate-500">
+                                Stock {item.stock} / Min {item.min} • {item.supplier}
+                              </p>
+                            </div>
+                            <div className="rounded-xl bg-slate-50 px-4 py-3 text-sm">
+                              Suggested order:{" "}
+                              <span className="font-semibold">
+                                {item.suggestedOrder} bottles
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </CardContent>
+                </Card>
+
+                <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Supplier Summary</CardTitle>
+                    <CardDescription>
+                      Overview of suppliers currently active in inventory.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[...new Set(items.map((i) => i.supplier))].map((supplier) => (
+                      <div
+                        key={supplier}
+                        className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                      >
+                        <p className="font-medium">{supplier}</p>
+                        <p className="mt-1 text-sm text-slate-500">
+                          {
+                            items.filter((item) => item.supplier === supplier)
+                              .length
+                          }{" "}
+                          products
+                        </p>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
+            {activeTab === "AI Assistant" && (
+              <section className="grid gap-6 2xl:grid-cols-[1.1fr_0.9fr]">
                 <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
                   <CardHeader>
                     <div className="flex items-center gap-2">
@@ -573,42 +778,35 @@ export default function Page() {
 
                 <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
                   <CardHeader>
-                    <CardTitle className="text-xl">Cavaapp Insights</CardTitle>
+                    <CardTitle className="text-2xl">Recent Consumption</CardTitle>
                     <CardDescription>
-                      Simple operational insights for managers and staff.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3 text-sm text-slate-700">
-                    <InsightRow
-                      icon={<AlertTriangle className="h-4 w-4" />}
-                      text={`${lowItems.length} bottle labels need attention before next service.`}
-                    />
-                    <InsightRow
-                      icon={<ShoppingCart className="h-4 w-4" />}
-                      text={`${urgentItems.length} labels are already below minimum and should be reordered first.`}
-                    />
-                    <InsightRow
-                      icon={<TrendingUp className="h-4 w-4" />}
-                      text={`Current inventory value is ${money.format(totalValue)} across ${totalUnits} bottles.`}
-                    />
-                  </CardContent>
-                </Card>
-
-                <Card className="rounded-[24px] border-0 shadow-xl shadow-slate-200/70">
-                  <CardHeader>
-                    <CardTitle className="text-xl">Mobile Friendly</CardTitle>
-                    <CardDescription>
-                      Designed to be used on desktop, tablet and phone.
+                      Latest stock deductions recorded in the system.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <MobilePoint text="Responsive cards for small screens" />
-                    <MobilePoint text="Collapsible navigation on mobile" />
-                    <MobilePoint text="Big touch targets for staff usage" />
+                    {logs.map((log) => (
+                      <div
+                        key={log.id}
+                        className="rounded-2xl border border-slate-200 p-3"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-medium">{log.itemName}</p>
+                            <p className="mt-1 text-sm text-slate-500">
+                              {log.reason}
+                            </p>
+                          </div>
+                          <div className="text-right text-sm">
+                            <p className="font-semibold">-{log.amount}</p>
+                            <p className="text-slate-400">{log.time}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
-              </div>
-            </section>
+              </section>
+            )}
           </div>
         </main>
       </div>
@@ -641,7 +839,9 @@ function StatCard({
       <CardContent className="flex items-start justify-between p-5">
         <div>
           <p className="text-sm text-slate-500">{title}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900">{value}</p>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+            {value}
+          </p>
           <p className="mt-1 text-xs text-slate-500">{subtitle}</p>
         </div>
         <div className="rounded-2xl bg-slate-100 p-3 text-slate-700">{icon}</div>
@@ -668,20 +868,23 @@ function InsightRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   )
 }
 
-function ActionBox({ title, text }: { title: string; text: string }) {
+function ActionBox({
+  title,
+  text,
+  onClick,
+}: {
+  title: string
+  text: string
+  onClick: () => void
+}) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <button
+      onClick={onClick}
+      className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:bg-slate-100"
+    >
       <p className="font-medium">{title}</p>
       <p className="mt-1 text-sm text-slate-500">{text}</p>
-    </div>
-  )
-}
-
-function MobilePoint({ text }: { text: string }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-      {text}
-    </div>
+    </button>
   )
 }
 
