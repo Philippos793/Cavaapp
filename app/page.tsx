@@ -467,6 +467,19 @@ export default function Page() {
       )
     )
   }
+  function removeBottle(itemId: number) {
+  setItems((current) =>
+    current.map((item) =>
+      item.id === itemId && item.bottles > 0
+        ? {
+            ...item,
+            bottles: item.bottles - 1,
+          }
+        : item
+    )
+  )
+}
+  
 
   function addManualConsumption() {
     const amount = Number(consumptionAmountMl)
@@ -903,7 +916,15 @@ export default function Page() {
                                   className="rounded-xl"
                                   onClick={() => addBottle(item.id)}
                                 >
-                                  +1 Bottle
+                                  +1
+                                </Button>
+
+                                <Button
+                                  variant="outline" 
+                                  className="rounded-xl"
+                                  onClick={() => removeBottle(item.id)}
+                                >
+                                  -1
                                 </Button>
                               </div>
                             </div>
